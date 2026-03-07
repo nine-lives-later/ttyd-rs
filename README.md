@@ -1,4 +1,4 @@
-# ttyd - Share your terminal over the web with Rust
+# ttyd-rs - Share your terminal over the web with Rust
 
 `ttyd-rs` is a high-performance web console application written in Rust. It allows you to seamlessly share your terminal over the web via WebSockets. It acts as a bridge between your local command-line interface and your web browser, utilizing `xterm.js` (https://xtermjs.org) for an authentic, rich terminal experience right inside your browser.
 
