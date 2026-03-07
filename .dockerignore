@@ -1,0 +1,4 @@
+./target/
+./html/dist/
+./html/node_modules/
+./src/assets/index.html

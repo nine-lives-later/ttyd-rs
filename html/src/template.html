@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ttyd-rs</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style id="xterm-css">{{XTERM_CSS}}</style>
+    <style id="tailwind-css">{{TAILWIND_CSS}}</style>
+    <style>
+        /* additional custom styles */
+        .terminal {
+            padding: 5px;
+            height: calc(100% - 10px);
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        #terminal-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            /* Hide scrollbar for Chrome, Safari and Opera */
+            &::-webkit-scrollbar {
+                display: none;
+            }
+            /* Hide scrollbar for IE, Edge and Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        /* Hide scrollbars globally */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        * {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        /* Override xterm.js hardcoded black background for the viewport */
+        .xterm .xterm-viewport {
+            background-color: #ffffff !important;
+        }
+        html.dark .xterm .xterm-viewport {
+            background-color: #000000 !important;
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-black m-0 p-0 h-screen w-screen overflow-hidden flex flex-col font-mono text-gray-800 dark:text-gray-300 transition-colors duration-300">
+    <div id="terminal-container" class="w-full h-full flex-1 p-1 bg-white dark:bg-black"></div>
+
+    <!-- Copy Notification -->
+    <div id="copy-notification" class="fixed bottom-28 right-4 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white px-3 py-2 rounded shadow-lg z-50 flex items-center space-x-2 font-sans text-sm transition-opacity duration-300 opacity-0 pointer-events-none" style="display: none;">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
+        </svg>
+        <span>Copied!</span>
+    </div>
+
+    <!-- Theme Button -->
+    <div id="theme-btn" class="fixed bottom-16 right-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-lg z-50 font-bold select-none transition-colors" title="Theme">
+        <!-- Auto Icon (Monitor) -->
+        <svg id="theme-icon-auto" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        <!-- Dark Icon (Moon) -->
+        <svg id="theme-icon-dark" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+        </svg>
+        <!-- Light Icon (Sun) -->
+        <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    </div>
+
+    <!-- Help Button -->
+    <div id="help-btn" class="fixed bottom-4 right-4 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-full w-10 h-10 flex items-center justify-center cursor-pointer shadow-lg z-50 font-bold select-none transition-colors" title="Help">?</div>
+
+    <!-- Help Modal -->
+    <div id="help-modal" class="hidden fixed inset-0 items-center justify-center z-50 flex bg-black/70 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-2xl p-6 max-w-lg w-full text-gray-800 dark:text-gray-300 mx-4 transition-colors duration-300">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Keyboard Shortcuts</h2>
+            <ul class="list-disc pl-5 space-y-2 mb-6">
+                <li><kbd class="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-sm text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-sans">Ctrl+Shift+C</kbd> - Copy selection</li>
+                <li><kbd class="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-sm text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-sans">Ctrl+Shift+V</kbd> - Paste from clipboard</li>
+                <li><kbd class="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-sm text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-sans">Ctrl+Shift+F</kbd> - Search terminal buffer</li>
+                <li><kbd class="bg-gray-200 dark:bg-gray-700 px-2 py-0.5 rounded text-sm text-gray-800 dark:text-gray-100 border border-gray-300 dark:border-gray-600 font-sans">Ctrl+Shift+S</kbd> - Export terminal buffer to file</li>
+            </ul>
+            
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">File Transfer (ZMODEM)</h2>
+            <div class="space-y-4">
+                <div>
+                    <strong class="text-blue-600 dark:text-blue-400 block mb-1">Upload files to server:</strong>
+                    <code class="bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 px-2 py-1 rounded block text-sm">rz</code>
+                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">Wait for the file picker to appear, select your files, and they will be uploaded to the current directory.</p>
+                </div>
+                <div>
+                    <strong class="text-blue-600 dark:text-blue-400 block mb-1">Download files from server:</strong>
+                    <code class="bg-gray-100 dark:bg-gray-900 border border-gray-300 dark:border-gray-700 px-2 py-1 rounded block text-sm">sz &lt;filename&gt;</code>
+                    <p class="text-sm mt-1 text-gray-600 dark:text-gray-400">The server will send the file and your browser will prompt you to download it.</p>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-4">
+                <span class="text-sm text-gray-500 dark:text-gray-400 font-sans">v<span id="ttyd-version">unknown</span></span>
+                <button id="close-help-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors font-sans">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 items-center justify-center z-50 flex bg-black/80 backdrop-blur-sm" style="display: none;">
+        <div class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-2xl p-6 max-w-sm w-full mx-4 flex flex-col gap-4 font-sans">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white text-center">Authentication Required</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-sm text-center">Please enter your token to access the terminal.</p>
+            <input type="password" id="login-token-input" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Token" />
+            <button id="login-submit-btn" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded transition-colors font-bold mt-2">Connect</button>
+            <div id="login-error" class="hidden text-red-500 text-sm text-center mt-1">Authentication failed or connection dropped.</div>
+        </div>
+    </div>
+
+    <script>{{APP_JS}}</script>
+</body>
+</html>
