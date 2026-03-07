@@ -1,3 +1,5 @@
+./.vscode/
+./.idea/
 ./target/
 ./html/dist/
 ./html/node_modules/
