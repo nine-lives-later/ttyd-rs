@@ -1,2 +1,6 @@
 target/
 ttyd-original/
+
+# Compiled frontend assets
+src/assets/index.html
+src/assets/*.woff2

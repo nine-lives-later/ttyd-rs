@@ -23,6 +23,50 @@ pub async fn favicon() -> Response {
     res
 }
 
+pub async fn font_regular() -> Response {
+    let mut res = include_bytes!("assets/jetbrains-mono-latin-400-normal.woff2")
+        .as_slice()
+        .into_response();
+    res.headers_mut().insert(
+        axum::http::header::CONTENT_TYPE,
+        axum::http::HeaderValue::from_static("font/woff2"),
+    );
+    res
+}
+
+pub async fn font_bold() -> Response {
+    let mut res = include_bytes!("assets/jetbrains-mono-latin-700-normal.woff2")
+        .as_slice()
+        .into_response();
+    res.headers_mut().insert(
+        axum::http::header::CONTENT_TYPE,
+        axum::http::HeaderValue::from_static("font/woff2"),
+    );
+    res
+}
+
+pub async fn font_italic() -> Response {
+    let mut res = include_bytes!("assets/jetbrains-mono-latin-400-italic.woff2")
+        .as_slice()
+        .into_response();
+    res.headers_mut().insert(
+        axum::http::header::CONTENT_TYPE,
+        axum::http::HeaderValue::from_static("font/woff2"),
+    );
+    res
+}
+
+pub async fn font_bold_italic() -> Response {
+    let mut res = include_bytes!("assets/jetbrains-mono-latin-700-italic.woff2")
+        .as_slice()
+        .into_response();
+    res.headers_mut().insert(
+        axum::http::header::CONTENT_TYPE,
+        axum::http::HeaderValue::from_static("font/woff2"),
+    );
+    res
+}
+
 pub async fn config(State(state): State<Arc<AppState>>) -> Json<Value> {
     let auth_mode_str = match state.auth_mode {
         AuthMode::Token => "token",
