@@ -28,7 +28,14 @@ By default, the server will bind to `127.0.0.1` on port `7681` with token authen
 
 ### Docker
 
-You can instantly deploy `ttyd-rs` via Docker. The included `Dockerfile` performs a multi-stage compilation for both the Node frontend and Rust backend.
+The easiest way to test `ttyd-rs` is to run it as a Docker container:
+
+```sh
+docker run -p 7681:7681 --rm --name ttyd-rs -it ghcr.io/nine-lives-later/ttyd-rs
+```
+
+An alternative is to simply use that image as source and copy the executable over to your image,
+see the final stage in the [Dockerfile](Dockerfile).
 
 ```bash
 ./build_and_run_docker.sh
