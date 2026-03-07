@@ -30,12 +30,14 @@ By default, the server will bind to `127.0.0.1` on port `7681` with token authen
 
 The easiest way to test `ttyd-rs` is to run it as a Docker container:
 
-```sh
+```bash
 docker run -p 7681:7681 --rm --name ttyd-rs -it ghcr.io/nine-lives-later/ttyd-rs
 ```
 
 An alternative is to simply use that image as source and copy the executable over to your image,
 see the final stage in the [Dockerfile](Dockerfile).
+
+You can also easily build the image yourself when running locally:
 
 ```bash
 ./build_and_run_docker.sh
