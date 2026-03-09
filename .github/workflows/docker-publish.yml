@@ -54,7 +54,7 @@ jobs:
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "Setting version to ${VERSION}"
-          echo -n "${VERSION}" > version.txt
+          echo -n "${VERSION}" > src/assets/version.txt
 
       - name: Build for PR
         if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
